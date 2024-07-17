@@ -6,9 +6,9 @@ This project implements a Rock Paper Scissors full onchain game using Solidity s
 
 - **Create Game**: Player 1 can create a game with a choice commitment.
 - **Cancle Game**: Player 1 can cancle a game before anyone join the game.
-- **Join Game**: Player 2 can join the game with a matching stake and choice.
-- **Reveal Choice**: Player1 reveals his choice to determine the winner.
-- **Exception**: Player2 win the game if the game is expired.
+- **Join Game**: Player 2 can join the game with his commitment and a matching stake.
+- **Reveal Choice**: Players reveal their choices to determine the winner.
+- **Exception**: Players lose the game if the choice is not submitted ontime.
 
 ## Prerequisites
 
@@ -61,6 +61,12 @@ This project implements a Rock Paper Scissors full onchain game using Solidity s
     ```sh
     npx hardhat run scripts/deploy.js --network sepolia
     npx hardhat run scripts/deploy_upgradeable.js --network sepolia
+    ```
+
+    Upgrade the contract to the Ethereum testnet:
+
+    ```sh
+    npx hardhat run scripts/upgrade.js --network sepolia 
     ```
 
     (Optional) Verify the contract deployed to the Ethereum testnet:

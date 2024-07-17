@@ -2,7 +2,7 @@ const { ethers, network } = require("hardhat");
 
 async function main() {
     console.log("Deploying contract to:", network.name);
-    const RockPaperScissors = await ethers.getContractFactory("RockPaperScissors");
+    const RockPaperScissors = await ethers.getContractFactory("RockPaperScissorsV2");
     const rps = await RockPaperScissors.deploy();
     await rps.waitForDeployment();
 

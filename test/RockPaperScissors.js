@@ -13,7 +13,8 @@ describe("RockPaperScissors", function () {
     Created: 1,
     Joined: 2,
     Revealed: 3,
-    Expired: 4
+    Expired: 4,
+    Settled: 5
   }; 
   const Choice = {
     None: 0,
@@ -23,7 +24,7 @@ describe("RockPaperScissors", function () {
   }; 
 
   beforeEach(async function () {
-    RockPaperScissors = await ethers.getContractFactory("RockPaperScissors");
+    RockPaperScissors = await ethers.getContractFactory("RockPaperScissorsV2");
     [owner, addr1, addr2, _] = await ethers.getSigners();
     rps = await RockPaperScissors.deploy();
     currentTime = Math.floor(Date.now() / 1000);
@@ -37,7 +38,8 @@ describe("RockPaperScissors", function () {
 
     const gameId = 1
     const choice2 = Choice.Scissors;
-    await rps.connect(addr2).joinGame(gameId, choice2, { value: ethers.parseEther("1.0") });
+    const commitment2 = ethers.solidityPackedKeccak256(["uint8", "string"], [choice2, "secret2"]);
+    await rps.connect(addr2).joinGame(gameId, commitment2, { value: ethers.parseEther("1.0") });
     /*
     await expect(
         rps.connect(addr2).joinGame(gameId, choice2, { value: ethers.parseEther("1.0") })
@@ -57,16 +59,22 @@ describe("RockPaperScissors", function () {
     await rps.connect(addr1).createGame(commitment1, expiration, { value: ethers.parseEther(bet) });
 
     const gameId = 1
-    const choice2 = Choice.Scissors;
-    await rps.connect(addr2).joinGame(gameId, choice2, { value: ethers.parseEther(bet) });
+    const choice2 = Choice.Paper;
+    const commitment2 = ethers.solidityPackedKeccak256(["uint8", "string"], [choice2, "secret2"]);
+    await rps.connect(addr2).joinGame(gameId, commitment2, { value: ethers.parseEther(bet) });
+
+    await rps.connect(addr2).revealChoice(gameId, choice2, "secret2");
     const balance2Before = await ethers.provider.getBalance(addr2.address);
+
+    let game = await rps.games(gameId);
+    expect(game.state).to.equal(GameState.Revealed);
 
     await rps.connect(addr1).revealChoice(gameId, choice1, "secret1");
     const balance2After = await ethers.provider.getBalance(addr2.address);
     const balance2Delta = balance2After - (balance2Before + ethers.parseEther(bet));
 
-    const game = await rps.games(gameId);
-    expect(game.state).to.equal(GameState.Revealed);
+    game = await rps.games(gameId);
+    expect(game.state).to.equal(GameState.Settled);
 
     if (game.player1.choice === game.player2.choice) {
       // expect(balance1Delta).to.equal(ethers.parseEther("0"));
