@@ -94,6 +94,10 @@ This project implements a Rock Paper Scissors full onchain game using Solidity s
 
 `RockPaperScissors.sol`: The main smart contract implementing the Rock Paper Scissors game logic.
 
+Basic Logic:
+
+![fig1](./imgs/flow.png)
+
 Deployment example:
 | Network | Address                                   |
 |---------|-------------------------------------------|
